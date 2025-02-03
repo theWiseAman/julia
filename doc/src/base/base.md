@@ -137,6 +137,8 @@ Base.finalizer
 Base.finalize
 Base.copy
 Base.deepcopy
+Base.getglobal
+Base.setglobal!
 Base.getproperty
 Base.setproperty!
 Base.propertynames

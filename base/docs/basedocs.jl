@@ -2953,6 +2953,69 @@ the behavior of the syntax `obj.f` is unusual.
 Also note that using methods is often preferable. See also this style guide documentation
 for more information: [Prefer exported methods over direct field access](@ref).
 
+See also [`setfield!`](@ref Core.setfield!),
+[`propertynames`](@ref Base.propertynames),
+[`setglobal!`](@ref Base.setglobal!),
+[`getproperty`](@ref Base.getproperty) and
+[`setproperty!`](@ref Base.setproperty!).
+"""
+Base.getglobal
+
+"""
+    setglobal!(value, name::Symbol, x)
+    setglobal!(value, name::Symbol, x, order::Symbol)
+
+The syntax `a.b = c` calls `setglobal!(a, :b, c)`.
+The syntax `@atomic order a.b = c` calls `setglobal!(a, :b, c, :order)`
+and the syntax `@atomic a.b = c` calls `setglobal!(a, :b, c, :sequentially_consistent)`.
+
+!!! compat "Julia 1.9"
+    `setglobal!` on modules requires at least Julia 1.9.
+
+See also [`setfield!`](@ref Core.setfield!),
+[`propertynames`](@ref Base.propertynames),
+[`getglobal`](@ref Base.getglobal),
+[`getproperty`](@ref Base.getproperty) and
+[`setproperty!`](@ref Base.setproperty!).
+"""
+Base.setglobal!
+
+"""
+    getproperty(value, name::Symbol)
+    getproperty(value, name::Symbol, order::Symbol)
+
+The syntax `a.b` calls `getproperty(a, :b)`.
+The syntax `@atomic order a.b` calls `getproperty(a, :b, :order)` and
+the syntax `@atomic a.b` calls `getproperty(a, :b, :sequentially_consistent)`.
+
+# Examples
+```jldoctest
+julia> struct MyType{T <: Number}
+           x::T
+       end
+
+julia> function Base.getproperty(obj::MyType, sym::Symbol)
+           if sym === :special
+               return obj.x + 1
+           else # fallback to getfield
+               return getfield(obj, sym)
+           end
+       end
+
+julia> obj = MyType(1);
+
+julia> obj.special
+2
+
+julia> obj.x
+1
+```
+
+One should overload `getproperty` only when necessary, as it can be confusing if
+the behavior of the syntax `obj.f` is unusual.
+Also note that using methods is often preferable. See also this style guide documentation
+for more information: [Prefer exported methods over direct field access](@ref).
+
 See also [`getfield`](@ref Core.getfield),
 [`propertynames`](@ref Base.propertynames) and
 [`setproperty!`](@ref Base.setproperty!).
